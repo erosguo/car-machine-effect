@@ -2,4 +2,25 @@ export type { Layer, CarTemplate } from './core/types';
 export { calcAspectRatio, validateTemplate } from './core/utils';
 export { getTemplate, getAllTemplates, registerTemplate } from './core/registry';
 export { templateNames } from './templates';
-export { CarScreen, ScreenFrame, LayerStack, useImageLoader, useCarTemplate } from './react';
+export {
+  CarScreen,
+  ScreenFrame,
+  LayerStack,
+  useImageLoader,
+  useCarTemplate,
+  ScreenEffectsProvider,
+  useScreenEffects,
+  ScreenEffectsLayer,
+  CarToolbar,
+  PRESETS,
+  getPreset,
+  DEFAULT_EFFECTS,
+} from './react';
+export type {
+  ScreenEffects,
+  ScreenType,
+  AmbientLightPreset,
+  Preset,
+  CarToolbarProps,
+  CarScreenProps,
+} from './react';

@@ -33,6 +33,8 @@
 
 ## 3. Core API Design
 
+### Basic Usage
+
 ```tsx
 // Basic usage
 import { CarScreen } from 'car-screen-preview';
@@ -86,7 +88,121 @@ interface CarTemplate {
 // aspectRatio 由 screenWidth / screenHeight 计算得出，不单独存储
 ```
 
-## 4. Pre-built Car Templates (v1)
+## 4. Screen Physical Effects & Environment Toolbar
+
+从 v2 开始，CarScreen 支持模拟屏幕物理特性和环境光照，让预览更贴近真机效果。
+
+### Effect Parameters
+
+```ts
+interface ScreenEffects {
+  /** 亮度 0.5-1.5，默认 1.0 */
+  brightness: number;
+  /** 对比度 0.5-1.5，默认 1.0 */
+  contrast: number;
+  /** 水平视角偏移 -30~30 度，默认 0 */
+  viewingAngleX: number;
+  /** 垂直视角偏移 -30~30 度，默认 0 */
+  viewingAngleY: number;
+  /** 眩光强度 0-1，默认 0 */
+  glare: number;
+  /** 屏幕类型 */
+  screenType: 'default' | 'oled' | 'lcd';
+  /** 屏幕曲率 0-100，默认 0 */
+  curvature: number;
+  /** 环境光照预设 */
+  ambientLight: 'daylight' | 'night' | 'sunny' | 'overcast';
+  /** 车内氛围灯颜色 */
+  carAmbientColor: string;
+  /** 车内氛围灯强度 0-1 */
+  carAmbientIntensity: number;
+}
+```
+
+### Usage Patterns
+
+```tsx
+// 1. 通过 toolbar prop 启用（内置 Toolbar UI）
+<CarScreen
+  model="tesla-model-3"
+  layers={[...]}
+  toolbar                    // 显示浮动 Toolbar
+  defaultEffects={{          // 初始效果
+    brightness: 1.0,
+    contrast: 1.0,
+    screenType: 'oled',
+    ambientLight: 'night',
+  }}
+/>
+
+// 2. 作为子组件使用（灵活布局）
+<CarScreen model="byd-seal" layers={[...]}>
+  <CarToolbar position="bottom-right" collapsed={false} />
+</CarScreen>
+
+// 3. 纯编程控制（无 UI）
+const { effects, setEffects } = useScreenEffects();
+setEffects({ brightness: 0.7, ambientLight: 'night' });
+```
+
+### Toolbar UI 设计
+
+- 浮动面板，可折叠/展开
+- 预设快速切换：`OLED 夜间` / `LCD 日间` / `阳光直射` / `阴天`
+- 滑块：亮度、对比度、曲率、眩光
+- 下拉选择：屏幕类型、环境光照、氛围灯颜色
+- 重置按钮回到默认值
+
+### 渲染实现方案
+
+所有效果通过 CSS filter + transform 实现，无需 Canvas：
+
+| 效果 | CSS 实现 |
+|------|----------|
+| 亮度 | `filter: brightness(N)` |
+| 对比度 | `filter: contrast(N)` |
+| 视角 | `perspective(800px) rotateX(Ndeg) rotateY(Ndeg)` |
+| 眩光 | 叠加 `radial-gradient` 半透明层 + `mix-blend-mode` |
+| 屏幕类型 | OLED = 增强对比度 + 更深黑底；LCD = 提亮黑底 + 轻微泛白 |
+| 曲率 | `clip-path` 曲线变形 |
+| 环境光 | 整体叠加 `brightness` + 色温滤镜 |
+| 氛围光 | 叠加纯色半透明层 (`rgba`) |
+
+### Architecture
+
+```
+src/
+└── react/
+    ├── effects/
+    │   ├── ScreenEffectsContext.tsx   # Context provider + hook
+    │   ├── ScreenEffectsLayer.tsx     # CSS filter 应用层
+    │   ├── presets.ts                 # 效果预设
+    │   └── CarToolbar.tsx             # 浮动控制面板
+    ├── components/
+    │   ├── CarScreen.tsx              # 增加 toolbar prop
+    │   └── ...
+    └── index.ts
+```
+
+### Props 变更
+
+`CarScreen` 新增 props：
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `toolbar` | `boolean \| 'bottom-right' \| 'bottom-left'` | `false` | 是否显示 Toolbar 及位置 |
+| `defaultEffects` | `Partial<ScreenEffects>` | `{}` | 初始效果值 |
+| `onEffectsChange` | `(effects: ScreenEffects) => void` | — | 效果变化回调 |
+
+`CarToolbar` props：
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `position` | `'bottom-right' \| 'bottom-left'` | `'bottom-right'` | 浮动位置 |
+| `collapsed` | `boolean` | `true` | 初始是否折叠 |
+| `showPresets` | `boolean` | `true` | 显示预设快捷切换 |
+
+## 5. Pre-built Car Templates (v1)
 
 ### 国产车型（重点覆盖）
 | 车型 | 屏幕 | 分辨率 | 特点 |
@@ -106,7 +222,7 @@ interface CarTemplate {
 
 > 模板采用 SVG 边框 + CSS 样式组合，社区可通过 PR 贡献新车型模板。
 
-## 5. Architecture
+## 6. Architecture
 
 ```
 car-screen-preview/
@@ -148,7 +264,7 @@ car-screen-preview/
 └── README.md
 ```
 
-## 6. Development Phases
+## 7. Development Phases
 
 ### Phase 1 - MVP (Core)
 - 项目初始化：TypeScript + Vitest + ESM/CJS 构建配置
@@ -163,19 +279,28 @@ car-screen-preview/
 - Storybook demo stories
 - npm publish + README
 
-### Phase 2 - Enhancements
+### Phase 2 - Screen Effects & Toolbar
+- `ScreenEffectsContext` + `useScreenEffects` hook
+- `ScreenEffectsLayer` — CSS filter/transform 渲染层
+- 效果预设：OLED夜间、LCD日间、阳光直射、阴天
+- `CarToolbar` — 浮动控制面板 UI
+- `CarScreen` toolbar prop 集成
+- 单元测试：效果计算、预设切换、Toolbar 渲染
+- Storybook stories：各预设效果对比展示
+
+### Phase 3 - Enhancements
 - Additional car templates
 - Remote URL image loading
 - SVG-based bezels for higher fidelity
 - Custom template API
 
-### Phase 3 - Interactivity
+### Phase 4 - Interactivity
 - Clickable hotspot zones
 - Image slice switching (simulate screen changes)
 - Animation support
 - Vue/Angular adapters
 
-## 7. Build & Export
+## 8. Build & Export
 
 - **Output formats**: ESM (`dist/index.mjs`) + CommonJS (`dist/index.js`) 双格式
 - **TypeScript**: 生成 `.d.ts` 类型声明文件
@@ -183,13 +308,13 @@ car-screen-preview/
 - **Dev deps**: Vitest, Testing Library, Storybook, TypeScript
 - **Tree-shaking**: 支持，按需导入仅打包使用的模板和组件
 
-## 8. Accessibility
+## 9. Accessibility
 
 - 每个 `Layer` 输出 `<img>` 时携带 `alt` 属性
 - `CarScreen` 根元素带 `role="img"` 和 `aria-label`（如 `"Tesla Model 3 屏幕预览"`）
 - 交互模式（v3）下支持键盘导航（Tab / Enter / Escape）
 
-## 9. Verdict
+## 10. Verdict
 
 **可行 (FEASIBLE)** ✅
 
