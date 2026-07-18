@@ -1,4 +1,4 @@
-# car-machine-preview
+# car-machine-effect
 
 > [English](./README.en.md) | [中文](./README.zh-CN.md)
 
@@ -7,13 +7,13 @@ React component for previewing car machine (HMI/infotainment) screens in the bro
 ## Install
 
 ```bash
-npm install car-machine-preview
+npm install car-machine-effect
 ```
 
 ## Quick Start
 
 ```tsx
-import { CarScreen } from 'car-machine-preview';
+import { CarScreen } from 'car-machine-effect';
 
 function Preview() {
   return (
@@ -79,7 +79,7 @@ Simulate real-world screen appearance with CSS-based visual effects:
 ### Programmatic Control
 
 ```tsx
-import { ScreenEffectsProvider, useScreenEffects, ScreenEffectsLayer } from 'car-machine-preview';
+import { ScreenEffectsProvider, useScreenEffects, ScreenEffectsLayer } from 'car-machine-effect';
 
 function MyCar() {
   const { effects, updateEffects } = useScreenEffects();

@@ -1,8 +1,8 @@
 {
-  "name": "car-machine-preview",
-  "version": "0.1.0",
-  "private": true,
-  "description": "React component for previewing car machine (HMI) screens in the browser",
+  "name": "car-machine-effect",
+  "version": "0.1.1",
+  "private": false,
+  "description": "previewing car machine (HMI) screens in the browser",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",

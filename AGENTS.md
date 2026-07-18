@@ -1,4 +1,4 @@
-# AGENTS.md — car-machine-preview
+# AGENTS.md — car-machine-effect
 
 ## Commands
 

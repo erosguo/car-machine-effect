@@ -1,4 +1,4 @@
-# car-machine-preview
+# car-machine-effect
 
 > [English](./README.en.md) | [中文](./README.zh-CN.md)
 
@@ -7,13 +7,13 @@
 ## 安装
 
 ```bash
-npm install car-machine-preview
+npm install car-machine-effect
 ```
 
 ## 快速开始
 
 ```tsx
-import { CarScreen } from 'car-machine-preview';
+import { CarScreen } from 'car-machine-effect';
 
 function Preview() {
   return (
@@ -79,7 +79,7 @@ function Preview() {
 ### 编程控制
 
 ```tsx
-import { ScreenEffectsProvider, useScreenEffects, ScreenEffectsLayer } from 'car-machine-preview';
+import { ScreenEffectsProvider, useScreenEffects, ScreenEffectsLayer } from 'car-machine-effect';
 
 function MyCar() {
   const { effects, updateEffects } = useScreenEffects();

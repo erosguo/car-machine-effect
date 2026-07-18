@@ -2,7 +2,7 @@
 
 ## Overview
 
-- **Package name**: `car-machine-preview`
+- **Package name**: `car-machine-effect`
 - **Version**: 0.1.0
 - **Tech stack**: TypeScript 5.5+, React 16+/17+/18+/19+, Vite 6 (library mode), Vitest 3
 - **Output**: ESM + CJS dual format, `.d.ts` declarations

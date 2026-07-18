@@ -229,7 +229,7 @@ Add exports:
 - `ScreenEffects` type, `DEFAULT_EFFECTS`
 - `PRESETS`, `getPreset`
 
-**Verification**: All new exports available via `import { ... } from 'car-machine-preview'`.
+**Verification**: All new exports available via `import { ... } from 'car-machine-effect'`.
 
 ---
 
