@@ -6,6 +6,7 @@ export {
   CarScreen,
   ScreenFrame,
   LayerStack,
+  PhotoWall,
   useImageLoader,
   useCarTemplate,
   ScreenEffectsProvider,
@@ -23,4 +24,5 @@ export type {
   Preset,
   CarToolbarProps,
   CarScreenProps,
+  PhotoWallItem,
 } from './react';

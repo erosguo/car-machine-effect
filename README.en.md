@@ -2,7 +2,7 @@
 
 > [English](./README.en.md) | [中文](./README.zh-CN.md)
 
-React component for previewing car machine (HMI/infotainment) screens in the browser. Load image slices and render them inside realistic car bezel frames with simulated screen physical effects.
+React component for previewing car machine (HMI/infotainment) screens in the browser. Upload image slices and render them inside realistic car bezel frames with simulated screen physical effects.
 
 ## Install
 
@@ -11,6 +11,22 @@ npm install car-machine-effect
 ```
 
 ## Quick Start
+
+### PhotoWall — upload + preview (recommended)
+
+```tsx
+import { useState } from 'react';
+import { PhotoWall } from 'car-machine-effect';
+
+function App() {
+  const [files, setFiles] = useState<(string | File)[]>([]);
+  return (
+    <PhotoWall files={files} onChange={setFiles} />
+  );
+}
+```
+
+### CarScreen — direct layer rendering
 
 ```tsx
 import { CarScreen } from 'car-machine-effect';
@@ -28,12 +44,52 @@ function Preview() {
 }
 ```
 
-## Props
+## PhotoWall
+
+All-in-one component combining file upload, thumbnail management, and car screen preview.
+
+### Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `files` | `(string \| File)[]` | — | Current items — `File` for new uploads, `string` URL for echo/edit |
+| `onChange` | `(files) => void` | — | Called when items are added or removed |
+| `multiple` | `boolean` | `false` | Allow multiple image upload |
+| `carPreview` | `boolean` | `true` | Show car frame preview |
+| `carModel` | `string \| CarTemplate` | `'tesla-model-3'` | Car model for preview |
+| `showToolbar` | `boolean` | `false` | Show effects toolbar on the car preview |
+| `carWidth` | `number` | `640` | Car preview width in px |
+
+### Examples
+
+```tsx
+// Upload mode — onChange returns File[]
+<PhotoWall files={[]} onChange={(files) => console.log(files)} />
+
+// Echo mode — pre-populate with existing URLs
+<PhotoWall
+  files={['https://example.com/bg.png', 'https://example.com/nav.png']}
+  onChange={(files) => console.log(files)}
+  multiple
+/>
+
+// With effects toolbar
+<PhotoWall files={[]} onChange={setFiles} showToolbar carModel="byd-seal" />
+
+// Standalone upload (no car preview)
+<PhotoWall files={[]} onChange={setFiles} carPreview={false} />
+```
+
+## CarScreen
+
+Direct car screen preview with layer stacking.
+
+### Props
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `model` | `string \| CarTemplate` | — | Pre-built car model key or custom template object |
-| `layers` | `Layer[]` | `[]` | Ordered image layers to render |
+| `layers` | `Layer[]` | — | Ordered image layers to render |
 | `width` | `number` | `640` | Preview width in px |
 | `theme` | `'dark' \| 'light'` | `'dark'` | Bezel color theme |
 | `onLayerError` | `(layer, error) => void` | — | Called when an image fails to load |
@@ -41,6 +97,16 @@ function Preview() {
 | `defaultEffects` | `Partial<ScreenEffects>` | — | Initial screen effects values |
 | `toolbarPosition` | `'bottom-right' \| 'bottom-left'` | `'bottom-right'` | Toolbar screen corner |
 | `toolbarCollapsed` | `boolean` | `false` | Start toolbar collapsed |
+
+### Layer
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `src` | `string \| File` | Image URL or `File` object for uploaded images |
+| `zIndex` | `number` | Layer stacking order |
+| `alt` | `string` | Alt text for the image |
+| `fallback` | `string` | Fallback URL when image fails to load |
+| `style` | `CSSProperties` | Additional inline styles |
 
 ## Screen Effects
 
@@ -128,11 +194,11 @@ function App() {
 
 ```bash
 npm install
-npm run dev        # watch mode
+npm run dev        # watch mode rebuild
 npm test           # run tests
 npm run storybook  # open Storybook
 ```
 
 ## License
 
-Apache 2.0
+MIT

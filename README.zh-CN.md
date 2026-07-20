@@ -2,7 +2,7 @@
 
 > [English](./README.en.md) | [中文](./README.zh-CN.md)
 
-用于在浏览器中预览汽车人机交互（HMI/信息娱乐）屏幕的 React 组件。加载图片切片并在逼真的车机边框框架内渲染，支持模拟屏幕物理效果。
+用于在浏览器中预览汽车人机交互（HMI/信息娱乐）屏幕的 React 组件。上传图片切片并在逼真的车机边框框架内渲染，支持模拟屏幕物理效果。
 
 ## 安装
 
@@ -11,6 +11,22 @@ npm install car-machine-effect
 ```
 
 ## 快速开始
+
+### PhotoWall — 上传 + 预览（推荐）
+
+```tsx
+import { useState } from 'react';
+import { PhotoWall } from 'car-machine-effect';
+
+function App() {
+  const [files, setFiles] = useState<(string | File)[]>([]);
+  return (
+    <PhotoWall files={files} onChange={setFiles} />
+  );
+}
+```
+
+### CarScreen — 直接渲染 Layer
 
 ```tsx
 import { CarScreen } from 'car-machine-effect';
@@ -28,12 +44,52 @@ function Preview() {
 }
 ```
 
-## 属性
+## PhotoWall
+
+一站式组件，整合文件上传、缩略图管理和车机屏幕预览。
+
+### 属性
+
+| 属性 | 类型 | 默认值 | 描述 |
+|------|------|--------|------|
+| `files` | `(string \| File)[]` | — | 当前文件 — `File` 为新上传，`string` URL 为回显 |
+| `onChange` | `(files) => void` | — | 文件变化时回调 |
+| `multiple` | `boolean` | `false` | 是否允许多张上传 |
+| `carPreview` | `boolean` | `true` | 是否显示车机预览框 |
+| `carModel` | `string \| CarTemplate` | `'tesla-model-3'` | 车机预览车型 |
+| `showToolbar` | `boolean` | `false` | 车机预览是否显示效果工具栏 |
+| `carWidth` | `number` | `640` | 车机预览宽度（像素） |
+
+### 示例
+
+```tsx
+// 上传模式 — onChange 返回 File[]
+<PhotoWall files={[]} onChange={(files) => console.log(files)} />
+
+// 回显模式 — 预置已有 URL
+<PhotoWall
+  files={['https://example.com/bg.png', 'https://example.com/nav.png']}
+  onChange={(files) => console.log(files)}
+  multiple
+/>
+
+// 带效果工具栏
+<PhotoWall files={[]} onChange={setFiles} showToolbar carModel="byd-seal" />
+
+// 纯上传（无车机预览）
+<PhotoWall files={[]} onChange={setFiles} carPreview={false} />
+```
+
+## CarScreen
+
+直接渲染车机屏幕预览，支持图片分层叠加。
+
+### 属性
 
 | 属性 | 类型 | 默认值 | 描述 |
 |------|------|--------|------|
 | `model` | `string \| CarTemplate` | — | 预构建的车型 key 或自定义模板对象 |
-| `layers` | `Layer[]` | `[]` | 要渲染的有序图片层 |
+| `layers` | `Layer[]` | — | 要渲染的有序图片层 |
 | `width` | `number` | `640` | 预览宽度（像素） |
 | `theme` | `'dark' \| 'light'` | `'dark'` | 边框颜色主题 |
 | `onLayerError` | `(layer, error) => void` | — | 图片加载失败时调用 |
@@ -41,6 +97,16 @@ function Preview() {
 | `defaultEffects` | `Partial<ScreenEffects>` | — | 初始屏幕效果值 |
 | `toolbarPosition` | `'bottom-right' \| 'bottom-left'` | `'bottom-right'` | 工具栏屏幕角落 |
 | `toolbarCollapsed` | `boolean` | `false` | 是否默认折叠工具栏 |
+
+### Layer
+
+| 字段 | 类型 | 描述 |
+|------|------|------|
+| `src` | `string \| File` | 图片 URL 或上传的 File 对象 |
+| `zIndex` | `number` | 图层叠放顺序 |
+| `alt` | `string` | 图片的替代文本 |
+| `fallback` | `string` | 图片加载失败时的备用 URL |
+| `style` | `CSSProperties` | 额外行内样式 |
 
 ## 屏幕效果
 
@@ -128,11 +194,11 @@ function App() {
 
 ```bash
 npm install
-npm run dev        # 监听模式
+npm run dev        # 监听模式自动构建
 npm test           # 运行测试
 npm run storybook  # 打开 Storybook
 ```
 
 ## 许可证
 
-Apache 2.0
+MIT

@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
 
 export interface Layer {
-  src: string;
+  src: string | File;
   zIndex: number;
   alt?: string;
   fallback?: string;

@@ -1,6 +1,8 @@
 export { CarScreen } from './components/CarScreen';
 export { ScreenFrame } from './components/ScreenFrame';
 export { LayerStack } from './components/LayerStack';
+export { PhotoWall } from './components/PhotoWall';
+export type { PhotoWallItem } from './components/PhotoWall';
 export { useImageLoader } from './hooks/useImageLoader';
 export { useCarTemplate } from './hooks/useCarTemplate';
 export {

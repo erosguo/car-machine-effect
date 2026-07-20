@@ -1,6 +1,7 @@
 {
   "name": "car-machine-effect",
-  "version": "0.1.1",
+  "version": "1.0.0",
+  "license": "MIT",
   "private": false,
   "description": "previewing car machine (HMI) screens in the browser",
   "type": "module",
